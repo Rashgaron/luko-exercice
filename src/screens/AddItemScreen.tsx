@@ -14,12 +14,14 @@ import { RootTabScreenProps } from "../navigation/types";
 import { colors } from "../theme/colors";
 import CameraImage from "../../assets/camera.png";
 import React from "react";
+import { ImagePicker } from "../sdk/ImagePicker";
 
 const { width, height } = Dimensions.get("window");
 
 export default function AddItemScreen({
   navigation,
 }: RootTabScreenProps<"AddItemScreen">) {
+  const { pickImage } = ImagePicker;
   const {
     control,
     handleSubmit,
@@ -67,6 +69,11 @@ export default function AddItemScreen({
     );
   };
 
+  const onPressImage = async () => {
+    const url = await pickImage();
+    console.log(url);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -81,7 +88,10 @@ export default function AddItemScreen({
         <View style={{ flex: 1 }}>
           {/* Add photo */}
           <View style={styles.imageContainer}>
-            <TouchableOpacity style={styles.addPhotoButton}>
+            <TouchableOpacity
+              style={styles.addPhotoButton}
+              onPress={onPressImage}
+            >
               <Image
                 style={{ width: 50, height: 50 }}
                 resizeMethod="resize"
