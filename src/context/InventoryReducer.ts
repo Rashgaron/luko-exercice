@@ -25,7 +25,7 @@ export const InventoryReducer = (state: any, action: any) => {
       } else
         return {
           ...state,
-          items: [{ ...action.payload, id: Math.random }, ...state.items],
+          items: [{ ...action.payload, id: Math.random() }, ...state.items],
           currentPrice:
             Number(state.currentPrice) + Number(action.payload.purchasePrice),
           itemToEdit: null,
