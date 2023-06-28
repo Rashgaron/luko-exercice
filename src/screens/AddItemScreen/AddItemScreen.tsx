@@ -50,12 +50,12 @@ export default function AddItemScreen({
     },
   ];
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const dispatch = useInventoryDispatch() as any;
   const { currentPrice, itemToEdit } = useInventory() as any;
   const { pickImage, takePhoto } = ImagePicker;
-  const [image, setImage] = useState(null);
-  const [extraError, setExtraError] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [extraError, setExtraError] = useState<string>("");
 
   const {
     control,
