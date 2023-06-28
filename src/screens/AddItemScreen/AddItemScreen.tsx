@@ -24,6 +24,7 @@ import {
 import { OptionsModal } from "../../components/OptionsModal";
 import { AddItemForm } from "./components/AddItemForm";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { MAX_VALUE } from "../../context/InventoryReducer";
 
 export interface InitialValues {
   Name: string;
@@ -52,10 +53,10 @@ export default function AddItemScreen({
   const [showModal, setShowModal] = useState(false);
   const dispatch = useInventoryDispatch() as any;
   const { currentPrice, itemToEdit } = useInventory() as any;
-
   const { pickImage, takePhoto } = ImagePicker;
   const [image, setImage] = useState(null);
   const [extraError, setExtraError] = useState("");
+
   const {
     control,
     handleSubmit,
@@ -81,7 +82,7 @@ export default function AddItemScreen({
 
   const submitForm = async (data: InitialValues) => {
     if (!image) return setExtraError("Should provide an image");
-    if (Number(currentPrice) + Number(data.Value) >= 40000) {
+    if (Number(currentPrice) + Number(data.Value) >= MAX_VALUE) {
       return setExtraError("Can't add more items, max value reached");
     }
     setExtraError("");

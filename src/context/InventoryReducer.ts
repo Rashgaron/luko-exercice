@@ -1,3 +1,5 @@
+export const MAX_VALUE = 40000;
+
 export const InventoryReducer = (state: any, action: any) => {
   let index = -1;
   switch (action.type) {
@@ -20,15 +22,7 @@ export const InventoryReducer = (state: any, action: any) => {
           itemToEdit: null,
           error: "",
         };
-      } else {
-        if (
-          Number(state.curentPrice) + Number(action.payload.purchasePrice) >=
-          40000
-        )
-          return {
-            ...state,
-            error: "You have reached the maximum amount of money",
-          };
+      } else
         return {
           ...state,
           items: [{ ...action.payload, id: Math.random }, ...state.items],
@@ -37,7 +31,6 @@ export const InventoryReducer = (state: any, action: any) => {
           itemToEdit: null,
           error: "",
         };
-      }
 
     case "remove":
       index = state.items.findIndex(

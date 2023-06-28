@@ -47,7 +47,19 @@ export const AddItemForm = ({ control, errors }: any) => {
   );
 };
 
-const CustomTextInput = (props: any) => {
+interface IProps {
+  field: {
+    onBlur: () => void;
+    onChange: () => void;
+    value: string;
+    name: string;
+  },
+  rightIcon: string;
+  testID: string;
+  placeholder: string;
+}
+
+const CustomTextInput = (props: IProps) => {
   const {
     field: { onBlur, onChange, value, name },
     rightIcon,
