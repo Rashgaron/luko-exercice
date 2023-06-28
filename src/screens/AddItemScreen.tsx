@@ -7,6 +7,8 @@ import {
   Dimensions,
   TextInput,
   KeyboardAvoidingView,
+  Modal,
+  Touchable,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import Button from "../components/Button";
@@ -27,10 +29,10 @@ const { width, height } = Dimensions.get("window");
 export default function AddItemScreen({
   navigation,
 }: RootTabScreenProps<"AddItemScreen">) {
+  const [showModal, setShowModal] = useState(false);
   const dispatch = useInventoryDispatch() as any;
   const { currentPrice, itemToEdit } = useInventory() as any;
   useEffect(() => {
-    console.log("reload: ", itemToEdit);
     if (itemToEdit) {
       setValue("Name", itemToEdit.name);
       console.log(itemToEdit.purchasePrice);
@@ -39,7 +41,7 @@ export default function AddItemScreen({
       setImage(itemToEdit.photo);
     }
   }, [itemToEdit]);
-  const { pickImage } = ImagePicker;
+  const { pickImage, takePhoto } = ImagePicker;
   const [image, setImage] = useState(null);
   const {
     control,
@@ -89,23 +91,21 @@ export default function AddItemScreen({
     );
   };
 
-  const onPressImage = async () => {
-    const result = (await pickImage()) as any;
+  const onPressImage = async (pickImageFn: any) => {
+    const result = (await pickImageFn()) as any;
     if (result) {
       const url = result!.assets[0].uri;
       setImage(url);
     }
+    setShowModal(false);
   };
 
   const submitForm = (data: any) => {
     console.log(data);
     if (!image) return;
     if (Number(currentPrice) + Number(data.Value) > 40000) {
-      console.log(Number(currentPrice) + Number(data.Value))
-      console.log("hola")
       return;
     }
-    console.log("submitting");
     dispatch({
       type: "add",
       payload: {
@@ -128,17 +128,53 @@ export default function AddItemScreen({
       behavior="height"
       keyboardVerticalOffset={200}
     >
+      <Modal visible={showModal} animationType="slide" transparent>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "flex-end",
+            flexDirection: "row",
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              backgroundColor: "white",
+              padding: 20,
+              alignItems: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => onPressImage(takePhoto)}
+            >
+              <Text>Open Camera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => onPressImage(pickImage)}
+            >
+              <Text>Open Gallery</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowModal(false)}
+            >
+              <Text>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.container}>
         <View style={styles.buttonsContainer}>
           <Button title="Cancel" onPress={() => navigation.goBack()} />
           <Button title="Add" onPress={handleSubmit(submitForm)} />
         </View>
         <View style={{ flex: 1 }}>
-          {/* Add photo */}
           <View style={styles.imageContainer}>
             <TouchableOpacity
               style={[styles.addPhotoButton, !image && { borderWidth: 3 }]}
-              onPress={async () => onPressImage()}
+              onPress={() => setShowModal(true)}
             >
               {image ? (
                 <Image
@@ -160,7 +196,6 @@ export default function AddItemScreen({
               )}
             </TouchableOpacity>
           </View>
-          {/* Form  */}
           <View style={styles.formContainer}>
             {errors.Name && <Text style={styles.error}>This is required</Text>}
             <Controller
@@ -229,5 +264,16 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
+  },
+  modalButton: {
+    height: 50,
+    width: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    borderWidth: 1,
+    borderColor: "gray",
   },
 });
