@@ -16,6 +16,7 @@ export interface IInventoryState {
   items: Item[];
   currentPrice: number;
   itemToEdit: Item | null;
+  error: string;
 }
 
 export const InventoryProvider = ({ children }: any) => {
@@ -23,6 +24,7 @@ export const InventoryProvider = ({ children }: any) => {
     items: items,
     currentPrice: 16500,
     itemToEdit: null,
+    error: "",
   });
 
   return (

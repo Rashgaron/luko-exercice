@@ -32,6 +32,7 @@ export const InventoryList = ({ items }: Props) => {
   };
   return (
     <FlatList
+      showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       data={calculateData(items)}

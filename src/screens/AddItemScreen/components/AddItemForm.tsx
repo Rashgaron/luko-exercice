@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   label: { textAlign: "left", fontSize: 18 },
   error: {
     color: "red",
+    textAlign: "center",
   },
   textInput: {
     width: "100%",

@@ -3,7 +3,7 @@ export const InventoryReducer = (state: any, action: any) => {
   switch (action.type) {
     case "add":
       index = state.items.findIndex(
-        (item: any) => item.id === state.itemToEdit!.id
+        (item: any) => item.id === state?.itemToEdit?.id
       );
       if (index !== -1) {
         return {
@@ -18,14 +18,27 @@ export const InventoryReducer = (state: any, action: any) => {
             ...state.items.slice(index + 1),
           ],
           itemToEdit: null,
+          error: "",
         };
-      } else
+      } else {
+        if (
+          Number(state.curentPrice) + Number(action.payload.purchasePrice) >=
+          40000
+        )
+          return {
+            ...state,
+            error: "You have reached the maximum amount of money",
+          };
         return {
           ...state,
           items: [{ ...action.payload, id: Math.random }, ...state.items],
           currentPrice:
             Number(state.currentPrice) + Number(action.payload.purchasePrice),
+          itemToEdit: null,
+          error: "",
         };
+      }
+
     case "remove":
       index = state.items.findIndex(
         (item: any) => item.id === action.payload.id

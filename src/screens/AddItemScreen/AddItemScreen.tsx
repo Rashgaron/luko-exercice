@@ -23,6 +23,7 @@ import {
 } from "../../context/InventoryContext";
 import { OptionsModal } from "../../components/OptionsModal";
 import { AddItemForm } from "./components/AddItemForm";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export interface InitialValues {
   Name: string;
@@ -54,6 +55,7 @@ export default function AddItemScreen({
 
   const { pickImage, takePhoto } = ImagePicker;
   const [image, setImage] = useState(null);
+  const [extraError, setExtraError] = useState("");
   const {
     control,
     handleSubmit,
@@ -69,19 +71,21 @@ export default function AddItemScreen({
 
   const onPressImage = async (pickImageFn: () => Promise<any>) => {
     const result = (await pickImageFn()) as any;
+    setShowModal(false);
     if (result) {
       const url = result!.assets[0].uri;
       setImage(url);
+      setExtraError("");
     }
-    setShowModal(false);
   };
 
-  const submitForm = (data: InitialValues) => {
-    if (!image) return;
-    if (Number(currentPrice) + Number(data.Value) > 40000) {
-      return;
+  const submitForm = async (data: InitialValues) => {
+    if (!image) return setExtraError("Should provide an image");
+    if (Number(currentPrice) + Number(data.Value) >= 40000) {
+      return setExtraError("Can't add more items, max value reached");
     }
-    dispatch({
+    setExtraError("");
+    await dispatch({
       type: "add",
       payload: {
         name: data.Name,
@@ -89,6 +93,7 @@ export default function AddItemScreen({
         type: "",
         description: data.Description,
         photo: image,
+        id: itemToEdit ? itemToEdit.id : undefined,
       },
     });
     navigation.goBack();
@@ -115,13 +120,10 @@ export default function AddItemScreen({
       loadItemToEdit(itemToEdit);
     }
   }, [itemToEdit]);
-
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={styles.container}
-      behavior="height"
-      keyboardVerticalOffset={200}
-      testID="AddItemScreen"
+      contentOffset={{ x: 0, y: 0 }}
     >
       <OptionsModal options={options} showModal={showModal} />
       <View style={styles.container}>
@@ -135,6 +137,9 @@ export default function AddItemScreen({
         </View>
         <View style={{ flex: 1 }}>
           <View style={styles.imageContainer}>
+            {extraError.length > 0 ? (
+              <Text style={{ color: "red" }}>{extraError}</Text>
+            ) : null}
             <TouchableOpacity
               style={[styles.addPhotoButton, !image && { borderWidth: 3 }]}
               onPress={() => setShowModal(true)}
@@ -173,7 +178,7 @@ export default function AddItemScreen({
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
