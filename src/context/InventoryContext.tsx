@@ -1,9 +1,22 @@
 import { createContext, useReducer, useContext } from "react";
-import { Item } from "../screens/InventoryScreen/components/InventoryList";
 import { InventoryReducer } from "./InventoryReducer";
 
 const InventoryContext = createContext(null);
 const InventoryDispatchContext = createContext(null);
+
+export interface Item {
+  id: number;
+  name: string;
+  purchasePrice: number;
+  type: string;
+  description?: string;
+  photo?: string;
+}
+export interface IInventoryState {
+  items: Item[];
+  currentPrice: number;
+  itemToEdit: Item | null;
+}
 
 export const InventoryProvider = ({ children }: any) => {
   const [inventory, dispatch] = useReducer(InventoryReducer, {

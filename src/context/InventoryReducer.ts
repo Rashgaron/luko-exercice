@@ -1,32 +1,30 @@
 export const InventoryReducer = (state: any, action: any) => {
-  console.log(action);
   let index = -1;
   switch (action.type) {
     case "add":
       index = state.items.findIndex(
-        (item: any) => item.id === state.itemToEdit.id
+        (item: any) => item.id === state.itemToEdit!.id
       );
-
-      console.log("index", index)
       if (index !== -1) {
         return {
           ...state,
           currentPrice:
             Number(state.currentPrice) -
-            Number(state.itemToEdit.purchasePrice) +
+            Number(state.itemToEdit!.purchasePrice) +
             Number(action.payload.purchasePrice),
           items: [
             ...state.items.slice(0, index),
             action.payload,
             ...state.items.slice(index + 1),
           ],
-          itemToEdit: null
+          itemToEdit: null,
         };
       } else
         return {
           ...state,
           items: [action.payload, ...state.items],
-          currentPrice: Number(state.currentPrice) + Number(action.payload.purchasePrice),
+          currentPrice:
+            Number(state.currentPrice) + Number(action.payload.purchasePrice),
         };
     case "remove":
       index = state.items.findIndex(
@@ -38,15 +36,13 @@ export const InventoryReducer = (state: any, action: any) => {
         items: state.items.filter((item: any) => item.id !== action.payload.id),
       };
     case "setItemToEdit":
-      console.log("setItemToEdit");
       return {
         ...state,
-        itemToEdit: state.items.find(
-          (item: any) => item.id === action.payload.id
-        ),
+        itemToEdit: action.payload
+          ? state.items.find((item: any) => item.id === action.payload.id)
+          : null,
       };
     default:
-      console.log("default");
       return state;
   }
 };
