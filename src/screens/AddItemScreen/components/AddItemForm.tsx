@@ -9,19 +9,23 @@ export const AddItemForm = ({ control, errors }: any) => {
       <Controller
         control={control}
         rules={{ required: true }}
-        render={(props: any) => <CustomTextInput {...props} />}
+        render={(props: any) => <CustomTextInput {...props} testID={"Name"} />}
         name="Name"
       />
       {errors.Value && <Text style={styles.error}>Should be a number</Text>}
       <Controller
         control={control}
         rules={{ required: true, pattern: /^[0-9]*$/ }}
-        render={(props: any) => <CustomTextInput {...props} rightIcon={"€"} />}
+        render={(props: any) => (
+          <CustomTextInput {...props} rightIcon={"€"} testID={"Value"} />
+        )}
         name="Value"
       />
       <Controller
         control={control}
-        render={(props: any) => <CustomTextInput {...props} />}
+        render={(props: any) => (
+          <CustomTextInput {...props} testID={"Description"} />
+        )}
         name="Description"
       />
     </View>
@@ -32,6 +36,7 @@ const CustomTextInput = (props: any) => {
   const {
     field: { onBlur, onChange, value, name },
     rightIcon,
+    testID,
   } = props;
 
   return (
@@ -45,6 +50,7 @@ const CustomTextInput = (props: any) => {
           ]}
         >
           <TextInput
+            testID={testID}
             style={styles.textInputItem}
             placeholder={name}
             onBlur={onBlur}

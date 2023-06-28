@@ -84,7 +84,6 @@ export default function AddItemScreen({
     dispatch({
       type: "add",
       payload: {
-        id: Math.random(),
         name: data.Name,
         purchasePrice: data.Value,
         type: "",
@@ -122,18 +121,24 @@ export default function AddItemScreen({
       style={styles.container}
       behavior="height"
       keyboardVerticalOffset={200}
+      testID="AddItemScreen"
     >
       <OptionsModal options={options} showModal={showModal} />
       <View style={styles.container}>
         <View style={styles.buttonsContainer}>
           <Button title="Cancel" onPress={handleCancelButton} />
-          <Button title="Add" onPress={handleSubmit(submitForm)} />
+          <Button
+            title="Add"
+            onPress={handleSubmit(submitForm)}
+            testID={"AddButton"}
+          />
         </View>
         <View style={{ flex: 1 }}>
           <View style={styles.imageContainer}>
             <TouchableOpacity
               style={[styles.addPhotoButton, !image && { borderWidth: 3 }]}
               onPress={() => setShowModal(true)}
+              testID={"AddPhotoButton"}
             >
               {image ? (
                 <>

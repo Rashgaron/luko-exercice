@@ -17,6 +17,7 @@ export const OptionsModal = ({
           {options.map((option: IOptionsModal, index: number) => {
             return (
               <TouchableOpacity
+                testID={option.title}
                 key={option.title}
                 style={[
                   styles.modalButton,
