@@ -11,7 +11,6 @@ export default function InventoryScreen({
 }: RootTabScreenProps<"Inventory">) {
   const { items } = useInventory() as any;
   const handleAddButtonPress = () => navigation.navigate("AddItem");
-  console.log(JSON.stringify(items, null, 2));
   return (
     <View style={styles.container}>
       <Title onButtonPress={handleAddButtonPress}>{route.name}</Title>
