@@ -12,19 +12,40 @@ import { useForm, Controller } from "react-hook-form";
 import Button from "../components/Button";
 import { RootTabScreenProps } from "../navigation/types";
 import { colors } from "../theme/colors";
+//@ts-ignore
 import CameraImage from "../../assets/camera.png";
-import React from "react";
+import React, { useState } from "react";
 import { ImagePicker } from "../sdk/ImagePicker";
+import { useEffect } from "react";
+import {
+  useInventory,
+  useInventoryDispatch,
+} from "../context/InventoryContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function AddItemScreen({
   navigation,
 }: RootTabScreenProps<"AddItemScreen">) {
+  const dispatch = useInventoryDispatch() as any;
+  const { currentPrice, itemToEdit } = useInventory() as any;
+  useEffect(() => {
+    console.log("reload: ", itemToEdit);
+    if (itemToEdit) {
+      setValue("Name", itemToEdit.name);
+      console.log(itemToEdit.purchasePrice);
+      setValue("Value", itemToEdit.purchasePrice.toString());
+      setValue("Description", itemToEdit.description);
+      setImage(itemToEdit.photo);
+    }
+  }, [itemToEdit]);
   const { pickImage } = ImagePicker;
+  const [image, setImage] = useState(null);
   const {
     control,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -35,11 +56,9 @@ export default function AddItemScreen({
   });
 
   const CustomTextInput = (props: any) => {
-    console.log(props);
     const {
       field: { onBlur, onChange, value, name },
     } = props;
-    console.log(name);
     return (
       <View style={{ width: "100%", marginBottom: 5 }}>
         <Text style={{ textAlign: "left", fontSize: 18 }}>{name}</Text>
@@ -63,6 +82,7 @@ export default function AddItemScreen({
             value={value}
             multiline={name === "Description"}
             numberOfLines={name === "Description" ? 5 : 1}
+            keyboardType="numeric"
           />
         </View>
       </View>
@@ -70,9 +90,37 @@ export default function AddItemScreen({
   };
 
   const onPressImage = async () => {
-    const url = await pickImage();
-    console.log(url);
+    const result = (await pickImage()) as any;
+    if (result) {
+      const url = result!.assets[0].uri;
+      setImage(url);
+    }
   };
+
+  const submitForm = (data: any) => {
+    console.log(data);
+    if (!image) return;
+    if (Number(currentPrice) + Number(data.Value) > 40000) {
+      console.log(Number(currentPrice) + Number(data.Value))
+      console.log("hola")
+      return;
+    }
+    console.log("submitting");
+    dispatch({
+      type: "add",
+      payload: {
+        id: Math.random(),
+        name: data.Name,
+        purchasePrice: data.Value,
+        type: "JEWELRY",
+        description: data.Description,
+        photo: image,
+      },
+    });
+    navigation.goBack();
+  };
+
+  console.log(errors);
 
   return (
     <KeyboardAvoidingView
@@ -83,41 +131,55 @@ export default function AddItemScreen({
       <View style={styles.container}>
         <View style={styles.buttonsContainer}>
           <Button title="Cancel" onPress={() => navigation.goBack()} />
-          <Button title="Add" disabled onPress={() => undefined} />
+          <Button title="Add" onPress={handleSubmit(submitForm)} />
         </View>
         <View style={{ flex: 1 }}>
           {/* Add photo */}
           <View style={styles.imageContainer}>
             <TouchableOpacity
-              style={styles.addPhotoButton}
-              onPress={onPressImage}
+              style={[styles.addPhotoButton, !image && { borderWidth: 3 }]}
+              onPress={async () => onPressImage()}
             >
-              <Image
-                style={{ width: 50, height: 50 }}
-                resizeMethod="resize"
-                resizeMode="cover"
-                source={CameraImage}
-              />
-              <Text style={styles.addPhotoText}>Add photo</Text>
+              {image ? (
+                <Image
+                  style={{ width: "100%", aspectRatio: 1, borderRadius: 999 }}
+                  resizeMethod="resize"
+                  resizeMode="cover"
+                  source={{ uri: image }}
+                />
+              ) : (
+                <>
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    resizeMethod="resize"
+                    resizeMode="cover"
+                    source={CameraImage}
+                  />
+                  <Text style={styles.addPhotoText}>Add photo</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
           {/* Form  */}
           <View style={styles.formContainer}>
+            {errors.Name && <Text style={styles.error}>This is required</Text>}
             <Controller
               control={control}
               rules={{ required: true }}
               render={(props: any) => <CustomTextInput {...props} />}
               name="Name"
             />
+            {errors.Value && (
+              <Text style={styles.error}>Should be a number</Text>
+            )}
             <Controller
               control={control}
-              rules={{ required: true }}
+              rules={{ required: true, pattern: /^[0-9]*$/ }}
               render={(props: any) => <CustomTextInput {...props} />}
               name="Value"
             />
             <Controller
               control={control}
-              rules={{ required: true }}
               render={(props: any) => <CustomTextInput {...props} />}
               name="Description"
             />
@@ -152,7 +214,6 @@ const styles = StyleSheet.create({
     width: "45%",
     aspectRatio: 1,
     borderColor: "gray",
-    borderWidth: 3,
     borderStyle: "dashed",
     borderRadius: 1000,
     alignItems: "center",
@@ -165,5 +226,8 @@ const styles = StyleSheet.create({
     flex: 2,
     width: "100%",
     alignItems: "center",
+  },
+  error: {
+    color: "red",
   },
 });

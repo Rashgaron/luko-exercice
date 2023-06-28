@@ -1,4 +1,7 @@
 import react from "react";
+//@ts-ignore
+import DeleteButton from "../../../../assets/close.png";
+import { TouchableOpacity } from "react-native";
 import {
   ScrollView,
   Text,
@@ -8,6 +11,8 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
+import { useInventoryDispatch } from "../../../context/InventoryContext";
+import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,26 +38,62 @@ const calculateData = (items: Item[]) => {
 };
 
 export const InventoryList = ({ items }: Props) => {
-  const renderItem = ({ item }: { item: Item }) => {
+  const navigation = useNavigation();
+  const dispatch = useInventoryDispatch() as any;
+
+  const editItem = (id: number) => {
+    dispatch({ type: "setItemToEdit", payload: { id } })
+    navigation.navigate("AddItem");    
+  }
+
+  const RenderItem = ({
+    item,
+    deleteAction,
+  }: {
+    item: Item;
+    deleteAction: () => void;
+  }) => {
     if (item.id === -1) return <View style={{ ...styles.item }} />;
 
     return (
-      <View style={[styles.item, styles.itemContainer]}>
+      <TouchableOpacity
+        onPress={()=>editItem(item.id)}
+        style={[styles.item, styles.itemContainer]}
+      >
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: -10,
+            right: -10,
+            zIndex: 1,
+            backgroundColor: "white",
+            borderRadius: 999,
+          }}
+          onPress={deleteAction}
+        >
+          <Image style={{ width: 35, height: 35 }} source={DeleteButton} />
+        </TouchableOpacity>
         <Image style={{ ...styles.image }} source={{ uri: item.photo }} />
         <View style={styles.itemBottomContainer}>
           <Text style={styles.itemTitle}>{item.name}</Text>
           <Text style={styles.itemPrice}>€ {item.purchasePrice}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
+  const onDelete = (id: number) => {
+    console.log(id);
+    dispatch({ type: "remove", payload: { id } });
+  };
   return (
     <FlatList
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       data={calculateData(items)}
-      renderItem={renderItem}
+      renderItem={(item) => (
+        <RenderItem {...item} deleteAction={() => onDelete(item.item.id)} />
+      )}
     />
   );
 };
