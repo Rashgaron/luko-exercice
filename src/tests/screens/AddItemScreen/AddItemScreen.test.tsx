@@ -4,6 +4,7 @@ import {
   useInventoryDispatch,
   useInventory,
 } from "../../../context/InventoryContext";
+import { ImagePicker } from "../../../sdk/ImagePicker";
 
 const screenId = "AddItemScreen";
 
@@ -43,22 +44,6 @@ beforeEach(() => {
 
 describe("Given an AddItemScreen component", () => {
   describe("When filling the form", () => {
-    describe("And the form is invalid", () => {
-      it("Should not call the dispatch function to add the new item", async () => {
-        const { getByText } = render(
-          <AddItemScreen
-            navigation={mockNavigation as any}
-            route={undefined as any}
-          />
-        );
-        const addButton = getByText("Add");
-
-        await fireEvent.press(addButton);
-
-        expect(mockDispatch).not.toHaveBeenCalled();
-        expect(mockNavigation.goBack).not.toHaveBeenCalled();
-      });
-    });
     describe("And the form is valid", () => {
       it("Should call the dispatch function to add the new item", async () => {
         await fillForm();
@@ -76,6 +61,22 @@ describe("Given an AddItemScreen component", () => {
         });
         expect(mockNavigation.goBack).toHaveBeenCalled();
       });
+    });
+    describe("And the form is not valid", () => {
+      it("Should not call the dispatch function to add the new item", async () => {
+        const { getByText } = render(
+          <AddItemScreen
+            navigation={mockNavigation as any}
+            route={undefined as any}
+          />
+        );
+        const addButton = getByText("Add");
+
+        await fireEvent.press(addButton);
+
+        expect(mockDispatch).not.toHaveBeenCalled();
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+      });
       it("Should not call the function to add new item if the price is over 40000", async () => {
         // @ts-ignore
         useInventory.mockImplementation(() => ({
@@ -87,11 +88,33 @@ describe("Given an AddItemScreen component", () => {
         expect(mockDispatch).not.toHaveBeenCalled();
         expect(mockNavigation.goBack).not.toHaveBeenCalled();
       });
+
+      it("Should not call the function to add new item if the name is missing", async () => {
+        await fillForm("");
+        expect(mockDispatch).not.toHaveBeenCalled();
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+      });
+      it("Should not call the function to add new item if the price is missing", async () => {
+        await fillForm("Test name", "");
+        expect(mockDispatch).not.toHaveBeenCalled();
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+      });
+      it("Should not call the function to add new item if the image is missing", async () => {
+        // @ts-ignore
+        ImagePicker.takePhoto.mockImplementation(() => Promise.resolve(null));
+        await fillForm();
+        expect(mockDispatch).not.toHaveBeenCalled();
+        expect(mockNavigation.goBack).not.toHaveBeenCalled();
+      });
     });
   });
 });
 
-const fillForm = async () => {
+const fillForm = async (
+  formName = "Test name",
+  formValue = "10",
+  formDescription = "Test description"
+) => {
   const { getByTestId, getByText, findByText, findByTestId } = render(
     <AddItemScreen
       navigation={mockNavigation as any}
@@ -104,9 +127,9 @@ const fillForm = async () => {
   const addPhotoButton = getByTestId("AddPhotoButton");
   const addButton = getByText("Add");
 
-  fireEvent.changeText(name, "Test name");
-  fireEvent.changeText(value, "10");
-  fireEvent.changeText(description, "Test description");
+  fireEvent.changeText(name, formName);
+  fireEvent.changeText(value, formValue);
+  fireEvent.changeText(description, formDescription);
   await fireEvent.press(addPhotoButton);
 
   const openCamera = getByText("Open Camera");
