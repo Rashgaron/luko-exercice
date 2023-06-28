@@ -21,7 +21,7 @@ export interface IInventoryState {
 
 export const InventoryProvider = ({ children }: any) => {
   const [inventory, dispatch] = useReducer(InventoryReducer, {
-    items: items,
+    items,
     currentPrice: 16500,
     itemToEdit: null,
     error: "",
@@ -62,22 +62,9 @@ const items: Item[] = [
   {
     id: 3,
     name: "Macbook Pro",
-    purchasePrice: 10000,
+    purchasePrice: 2000,
     type: "ELECTRONICS",
-    photo: "https://i.ibb.co/4dfndL2/louis-hansel-M-d-J-Scwa-LE-unsplash.jpg",
-  },
-  {
-    id: 4,
-    name: "Macbook Pro",
-    purchasePrice: 500,
-    type: "ELECTRONICS",
-    photo: "https://i.ibb.co/4dfndL2/louis-hansel-M-d-J-Scwa-LE-unsplash.jpg",
-  },
-  {
-    id: 5,
-    name: "Macbook Pro",
-    purchasePrice: 500,
-    type: "ELECTRONICS",
-    photo: "https://i.ibb.co/4dfndL2/louis-hansel-M-d-J-Scwa-LE-unsplash.jpg",
+    photo:
+      "https://reviewed-com-res.cloudinary.com/image/fetch/s--Q-ZGPp9y--/b_white,c_limit,cs_srgb,f_auto,fl_progressive.strip_profile,g_center,q_auto,w_1200/https://reviewed-production.s3.amazonaws.com/1607081088000/DSC_0877.jpg",
   },
 ];

@@ -9,6 +9,7 @@ import {
   Text,
 } from "react-native";
 import { Item } from "../../../context/InventoryContext";
+import { colors } from "../../../theme/colors";
 const { height } = Dimensions.get("window");
 
 export const InventoryItem = ({
@@ -79,6 +80,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
+    borderTopWidth: 1,
+    borderColor: colors.mainGrey,
   },
   itemTitle: {
     fontSize: 20,

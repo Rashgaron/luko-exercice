@@ -9,7 +9,13 @@ export const AddItemForm = ({ control, errors }: any) => {
       <Controller
         control={control}
         rules={{ required: true }}
-        render={(props: any) => <CustomTextInput {...props} testID={"Name"} />}
+        render={(props: any) => (
+          <CustomTextInput
+            {...props}
+            testID={"Name"}
+            placeholder={"Bracelet"}
+          />
+        )}
         name="Name"
       />
       {errors.Value && <Text style={styles.error}>Should be a number</Text>}
@@ -17,14 +23,23 @@ export const AddItemForm = ({ control, errors }: any) => {
         control={control}
         rules={{ required: true, pattern: /^[0-9]*$/ }}
         render={(props: any) => (
-          <CustomTextInput {...props} rightIcon={"€"} testID={"Value"} />
+          <CustomTextInput
+            {...props}
+            rightIcon={"€"}
+            testID={"Value"}
+            placeholder={"700"}
+          />
         )}
         name="Value"
       />
       <Controller
         control={control}
         render={(props: any) => (
-          <CustomTextInput {...props} testID={"Description"} />
+          <CustomTextInput
+            {...props}
+            testID={"Description"}
+            placeholder={"Optional"}
+          />
         )}
         name="Description"
       />
@@ -37,6 +52,7 @@ const CustomTextInput = (props: any) => {
     field: { onBlur, onChange, value, name },
     rightIcon,
     testID,
+    placeholder,
   } = props;
 
   return (
@@ -52,7 +68,8 @@ const CustomTextInput = (props: any) => {
           <TextInput
             testID={testID}
             style={styles.textInputItem}
-            placeholder={name}
+            placeholderTextColor={"lightgrey"}
+            placeholder={placeholder}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -73,7 +90,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   textInputContainer: { width: "100%", marginBottom: 5 },
-  label: { textAlign: "left", fontSize: 18 },
+  label: { textAlign: "left", fontSize: 16 },
   error: {
     color: "red",
     textAlign: "center",

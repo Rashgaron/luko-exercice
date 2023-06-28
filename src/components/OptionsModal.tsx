@@ -1,4 +1,5 @@
 import { Modal, View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { colors } from "../theme/colors";
 export interface IOptionsModal {
   title: string;
   onPress: () => void;
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   modalButton: {
     height: 50,
     width: "90%",
-    backgroundColor: "#007AFF",
+    backgroundColor: colors.mainBlue,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",

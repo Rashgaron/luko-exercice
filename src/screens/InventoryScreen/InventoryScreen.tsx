@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Title } from "../../components/Title";
 import { RootTabScreenProps } from "../../navigation/types";
 import { colors } from "../../theme/colors";
@@ -15,7 +15,11 @@ export default function InventoryScreen({
   return (
     <View style={styles.container}>
       <Title onButtonPress={handleAddButtonPress}>{route.name}</Title>
-      <InventoryList items={items} />
+      {items.length === 0 ? (
+        <Text style={styles.noItemsText}>No items yet</Text>
+      ) : (
+        <InventoryList items={items} />
+      )}
     </View>
   );
 }
@@ -25,5 +29,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: colors.background,
+  },
+  noItemsText: {
+    color: colors.mainGrey,
   },
 });
