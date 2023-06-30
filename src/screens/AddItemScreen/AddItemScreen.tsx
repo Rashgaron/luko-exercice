@@ -81,9 +81,11 @@ export default function AddItemScreen({
   };
 
   const submitForm = async (data: InitialValues) => {
-    if (!image) return setExtraError("Should provide an image");
+    if (!image) return setExtraError("The image is mandatory");
     if (Number(currentPrice) + Number(data.Value) >= MAX_VALUE) {
-      return setExtraError("Can't add more items, max value reached");
+      return setExtraError(
+        "Can't add more items, max value of 40.000€ reached. Try decreasing the price."
+      );
     }
     setExtraError("");
     await dispatch({
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 2,
+    marginTop: 10,
     width: "100%",
     alignItems: "center",
   },
